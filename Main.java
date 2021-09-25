@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -13,27 +14,24 @@ public class Main {
         addDir(dirs);
         addFile(files);
 
-        String dirLog = mkdir(dirs);
-        String fileLog = createNewFile(files);
+        String dirLog = dirLog(dirs);
+        String fileLog = filelog(files);
 
-        FileWriter(dirLog);
-        FileWriter(fileLog);
+        writeLog(dirLog);
+        writeLog(fileLog);
 
         GameProgress progress1 = new GameProgress(122, 12, 4, 2324.32);
         GameProgress progress2 = new GameProgress(133, 23, 4, 23.123);
         GameProgress progress3 = new GameProgress(3213, 11, 6, 32.32);
 
         List<File> fileSave = new ArrayList<>();
-        fileOutputStream(fileSave);
+        addFileListZip(fileSave);
 
         saveGame(fileSave.get(0).getAbsolutePath(), progress1);
         saveGame(fileSave.get(1).getAbsolutePath(), progress2);
         saveGame(fileSave.get(2).getAbsolutePath(), progress3);
 
         String zipName = "C://Gaming/savegames/save.zip";
-
-        fileOutputStream(fileSave);
-
         zipFile(zipName, fileSave);
         deleteFile(fileSave);
 
@@ -53,25 +51,19 @@ public class Main {
     }
 
     private static void addFile(List<File> files) {
-        files.add(new File("C://Gaming/src/main//Main.java"));
-        files.add(new File("C://Gaming/src/main//Utils.java"));
+        files.add(new File("C://Gaming/src/main/Main.java"));
+        files.add(new File("C://Gaming/src/main/Utils.java"));
         files.add(new File("C://Gaming/temp/temp.txt"));
     }
 
-    private static String mkdir(List<File> dirs) {
-        StringBuilder sb = new StringBuilder();
-        for (File dir : dirs) {
-            if (dir.mkdir())
-                sb
-                        .append("Каталог ")
-                        .append(dir.getName())
-                        .append("  создан")
-                        .append("\n");
-        }
-        return sb.toString();
+    private static String dirLog(List<File> dirs) {
+        return dirs.stream()
+                .filter(File::mkdir)
+                .map(dir -> "Каталог " + dir.getName() + " был создан" + "\n")
+                .collect(Collectors.joining("", "Логи" + "\n", ""));
     }
 
-    private static String createNewFile(List<File> files) {
+    private static String filelog(List<File> files) {
         StringBuilder bold = new StringBuilder();
         for (File file : files) {
             try {
@@ -79,7 +71,7 @@ public class Main {
                     bold
                             .append("Файл ")
                             .append(file.getName())
-                            .append("  создан")
+                            .append(" создан")
                             .append("\n");
             } catch (IOException ex) {
                 bold
@@ -90,7 +82,7 @@ public class Main {
         return bold.toString();
     }
 
-    private static void FileWriter(String text) {
+    private static void  writeLog(String text) {
         try (FileWriter writer = new FileWriter("C://Gaming/temp/temp.txt", true)) {
             writer.write(text);
             writer.flush();
@@ -102,7 +94,7 @@ public class Main {
 
     // тут начало 2 задачи
 
-    private static void fileOutputStream(List<File> fileSave) {
+    private static void addFileListZip(List<File> fileSave) {
         fileSave.add(new File("C://Gaming/savegames/save1.dat"));
         fileSave.add(new File("C://Gaming/savegames/save2.dat"));
         fileSave.add(new File("C://Gaming/savegames/save3.dat"));
@@ -129,6 +121,7 @@ public class Main {
                 fis.read(buffer);
                 zout.write(buffer);
                 zout.closeEntry();
+                fis.close();
             }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
@@ -145,7 +138,7 @@ public class Main {
 }
 
 
-//
+
 
 
 
